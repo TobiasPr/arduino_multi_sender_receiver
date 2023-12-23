@@ -4,7 +4,7 @@
 
 const bool is_receiver = true;
 const Receiver receiver = Receiver("receiver", true);
-const Sender sender = Sender("sender", 0, 10, true);
+const Sender sender = Sender("sender", 0, 10, 3, true);
 //const Sender sender = Sender("sender", 10, 20, true);
 
 void setup() {
@@ -20,8 +20,9 @@ void setup() {
 
 void loop() {
   if(is_receiver){
-      int test = receiver.receiveNumber();
-
+      receiver.sendStartSignal();
+      receiver.receiveNumber();
+      delay(1000);
   }else {
     // is_sender
     for (byte i =0; i <= 255; i++){

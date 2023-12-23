@@ -1,14 +1,16 @@
 #include <TimeLib.h>
 
 const int senderPins[] = {2,3,4,5,6,7,8,9};
+const int receiverPin = 0;
 
 class Sender: public CommonClass  {
   public:
     String name;
     int send_start;
     int send_end;
+    int d;
 
-    Sender(String name, int send_start, int send_end, bool print = false): CommonClass(print){
+    Sender(String name, int send_start, int send_end, int delay, bool print = false): CommonClass(print), d(delay){
       name = name;
       send_start = send_start;
       send_end = send_end;
@@ -19,7 +21,17 @@ class Sender: public CommonClass  {
       for (int i= 0; i< 8; i++) {
         pinMode(senderPins[i], OUTPUT);
       }
+      pinMode(receiverPin, INPUT);
       printIfConfigured("Started as Sender");
+    }
+
+    bool receiveStartSignal() {
+      byte receivedNumber = 0;
+      for(int i=0; i < 8; i++) {
+        bitWrite(receivedNumber, i, digitalRead(receiverPin));
+      }
+      CommonClass::printIfConfigured("Received value: " + String(receivedNumber));
+      return receivedNumber == 1;
     }
 
     int readSecondOfMin(){
@@ -27,16 +39,19 @@ class Sender: public CommonClass  {
       return second(time_now);
     }
 
-    void sendNumber(byte number){
-      // Check if 30 seconds have passed
-      if (sec_of_min >= send_start && sec_of_min <= send_end) {
-        printIfConfigured("Arduino "+ name +" sending");
-        
-        for(int i=0; i<8; i++){
-          digitalWrite(senderPins[i], bitRead(number, i));
-        }
-
-        printIfConfigured("Send Number " + String(number));
+    void waitForStartSignalAndSend(){
+      if(receiveStartSignal()){
+        delay(d);
       }
+    }
+
+    void sendNumber(byte number){
+      printIfConfigured("Arduino "+ name +" sending");
+      
+      for(int i=0; i<8; i++){
+        digitalWrite(senderPins[i], bitRead(number, i));
+      }
+
+      printIfConfigured("Send Number " + String(number));
     }
 };
