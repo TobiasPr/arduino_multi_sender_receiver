@@ -8,13 +8,12 @@ class Sender: public CommonClass  {
     String name;
     int send_start;
     int send_end;
-    int d;
+    int sending_delay;
 
-    Sender(String name, int send_start, int send_end, int delay, bool print = false): CommonClass(print), d(delay){
+    Sender(String name, int send_start, int send_end, int delay, bool print = false): CommonClass(print), sending_delay(delay){
       name = name;
       send_start = send_start;
       send_end = send_end;
-      printInfo = printInfo;
     }
 
     void init() override {
@@ -41,7 +40,10 @@ class Sender: public CommonClass  {
 
     void waitForStartSignalAndSend(){
       if(receiveStartSignal()){
-        delay(d);
+        printIfConfigured("Signal received");
+        delay(sending_delay);
+        sendNumber(1);
+        printIfConfigured("Number sent");
       }
     }
 
