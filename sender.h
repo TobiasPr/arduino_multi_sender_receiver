@@ -26,9 +26,7 @@ class Sender: public CommonClass  {
 
     bool receiveStartSignal() {
       byte receivedNumber = 0;
-      for(int i=0; i < 8; i++) {
-        bitWrite(receivedNumber, i, digitalRead(receiverPin));
-      }
+      bitWrite(receivedNumber, i, digitalRead(receiverPin));
       CommonClass::printIfConfigured("Received value: " + String(receivedNumber));
       return receivedNumber == 1;
     }

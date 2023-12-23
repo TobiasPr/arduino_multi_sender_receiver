@@ -26,7 +26,7 @@ void loop() {
   }else {
     // is_sender
     for (byte i =0; i <= 255; i++){
-      sender.sendNumber(1);
+      sender.waitForStartSignalAndSend();
       delay(1000);
     }
   }
