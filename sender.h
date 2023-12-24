@@ -1,7 +1,14 @@
 #include <TimeLib.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+#define ONE_WIRE_BUS 12  // Data pin connected to the DS18B20
 
 const int senderPins[] = {2,3,4,5,6,7,8,9};
-const int receiverPin = 0;
+const int receiverPin = 10;
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
 
 class Sender: public CommonClass  {
   public:
@@ -22,11 +29,12 @@ class Sender: public CommonClass  {
       }
       pinMode(receiverPin, INPUT);
       printIfConfigured("Started as Sender");
+      sensors.begin();
     }
 
     bool receiveStartSignal() {
       byte receivedNumber = 0;
-      bitWrite(receivedNumber, i, digitalRead(receiverPin));
+      bitWrite(receivedNumber, 0, digitalRead(receiverPin));
       CommonClass::printIfConfigured("Received value: " + String(receivedNumber));
       return receivedNumber == 1;
     }
@@ -40,9 +48,17 @@ class Sender: public CommonClass  {
       if(receiveStartSignal()){
         printIfConfigured("Signal received");
         delay(sending_delay);
-        sendNumber(1);
+        int temp = (int)getTemp();
+        sendNumber(temp);
         printIfConfigured("Number sent");
       }
+    }
+
+    float getTemp(){
+      sensors.requestTemperatures();
+      float temperature = sensors.getTempCByIndex(0);
+      Serial.print("Temperature: " + String(temperature));
+      return temperature;
     }
 
     void sendNumber(byte number){

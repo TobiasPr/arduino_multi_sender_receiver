@@ -1,5 +1,5 @@
 const int receiverPins[] = {2,3,4,5,7,8,9,10};
-const int senderPin = 10;
+const int senderPin = 0;
 
 const unsigned long interval = 20000;
 
